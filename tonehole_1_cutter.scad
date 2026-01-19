@@ -20,24 +20,31 @@ tooth_width_angle = 360 / num_teeth;
 flute_twist = 0; // degrees of twist from bottom to top for right rake
 
 tooth_cut_mm = 0.5; // 0.5mm cut into the base
+cutter_width = 0.04 * INCH; // Width of the V-cutter at the outside
 
 module flute_on_cone(angle) {
-    // The flute is a thin box that starts just 0.5mm inside the base and extends to the outside at the top
+    // The flute is a polygon that creates a sawtooth shape
     hull() {
-        // Bottom of flute (cuts 0.5mm into the base)
+        // Bottom of flute
         rotate([0,0,angle])
-            translate([r1 + tooth_depth/2, 0, 0])
-                cylinder(h=0.01, r=tooth_depth/2, $fn=12);
-        rotate([0,0,angle])
-            translate([r1 - tooth_cut_mm, 0, 0])
-                cylinder(h=0.01, r=tooth_depth/2, $fn=12);
-        // Top of flute (at top of cone, outside, with twist)
+            linear_extrude(height=0.01)
+                polygon(points=[
+                    [r1, 0],
+                    [(r1 + tooth_depth) * cos(tooth_width_angle/2), (r1 + tooth_depth) * sin(tooth_width_angle/2)],
+                    [r1 * cos(tooth_width_angle), r1 * sin(tooth_width_angle)],
+                    [r1 - tooth_cut_mm, 0]
+                ]);
+
+        // Top of flute
         rotate([0,0,angle - flute_twist])
-            translate([r2 + tooth_depth/2, 0, height])
-                cylinder(h=0.01, r=tooth_depth/2, $fn=12);
-        rotate([0,0,angle - flute_twist])
-            translate([r2, 0, height])
-                cylinder(h=0.01, r=tooth_depth/2, $fn=12);
+            translate([0, 0, height])
+                linear_extrude(height=0.01)
+                    polygon(points=[
+                        [r2, 0],
+                        [(r2 + tooth_depth) * cos(tooth_width_angle/2), (r2 + tooth_depth) * sin(tooth_width_angle/2)],
+                        [r2 * cos(tooth_width_angle), r2 * sin(tooth_width_angle)],
+                        [r2 - tooth_cut_mm, 0]
+                    ]);
     }
 }
 
