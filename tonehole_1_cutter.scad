@@ -3,9 +3,9 @@ $fn = 100;
 
 INCH = 25.4;
 
-bottom_diameter = 0.217 * INCH;
-top_diameter = 0.090 * INCH;
-side_length = 0.28 * INCH;
+bottom_diameter = 0.335 * INCH;
+top_diameter = 0.290 * INCH;
+side_length = 0.365 * INCH;
 
 r1 = bottom_diameter / 2;
 r2 = top_diameter / 2;
@@ -48,6 +48,12 @@ module flute_on_cone(angle) {
     }
 }
 
+
+// M4 tap drill diameter (clearance for tap): 3.3mm
+m4_tap_diameter = 3.3; // mm
+m4_tap_radius = m4_tap_diameter / 2;
+m4_tap_depth = height / 2;
+
 module fluted_cone() {
     difference() {
         // Main cone
@@ -58,6 +64,10 @@ module fluted_cone() {
             angle = i * tooth_width_angle;
             flute_on_cone(angle);
         }
+
+        // Central M4 tap hole from the top, depth = height/2
+        translate([0, 0, height - m4_tap_depth])
+            cylinder(r = m4_tap_radius, h = m4_tap_depth, $fn = 60);
     }
 }
 
